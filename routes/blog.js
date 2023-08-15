@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const mysql = require('mysql2/promise')
 
+
 const dbConfig = {
     host: 'localhost',
     user: 'root',
@@ -9,10 +10,13 @@ const dbConfig = {
     database: 'systemablog'
 }
 
-router.get('/', async (req, res) => {
+const auth = require('../middleware/auth')
+
+router.get('/', auth, async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig)
-        const getAllBlogsSql = `SELECT * FROM blog`
+        const getAllBlogsSql = `SELECT blog.id, blog.title, blog.story, blog.created_at, CONCAT(author.first_name, ' ', author.last_name)
+        AS author_name FROM blog INNER JOIN author ON blog.author_id=author.id;`
         const [rows] = await connection.query(getAllBlogsSql)
         if (rows.length === 0) {
             connection.end()
