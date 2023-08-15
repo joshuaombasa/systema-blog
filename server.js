@@ -5,6 +5,8 @@ const cors = require('cors')
 
 app.use(cors)
 
+app.use(express.json())
+
 const blogRoutes = require('./routes/blog')
 const authorRoutes = require('./routes/author')
 
