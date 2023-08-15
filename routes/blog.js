@@ -43,4 +43,21 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+router.post('/', async (req, res) => {
+    const {title, story, author_id} = req.body
+
+    try {
+        const connection = await mysql.createConnection(dbConfig)
+        const sql = `INSERT INTO blog (title, story,  author_id)
+        VALUES (?, ?, ?)`
+        await connection.query(sql, [title, story, parseInt(author_id)])
+        connection.end()
+        return res.status(200).json(`${title} saved`)
+    } catch(error) {
+        return res.status(400).json(error)
+    }
+
+    
+})
+
 module.exports = router
