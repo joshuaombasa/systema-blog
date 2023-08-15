@@ -1,7 +1,9 @@
 const express = require('express')
 const { check, validationResult} = require('express-validator')
 const router = express.Router()
+const JWT  =require('jsonwebtoken')
 const mysql = require('mysql2/promise')
+const bcrypt = require('bcrypt')
 
 const dbConfig = {
     host: 'localhost',
@@ -9,6 +11,8 @@ const dbConfig = {
     password: '',
     database: 'systemablog'
 }
+
+const SECRET_KEY = '23DH2029E3E7D02'
 
 router.post('/',[
     check("email", "Please enter a valid email").isEmail(),
@@ -28,8 +32,19 @@ router.post('/',[
 
         if (rows.length === 0) {
             connection.end()
-            return res.status(400).json("Incorect credentials")
+            return res.status(400).json("Invalid credentials")
         }
+
+        const isMatch = await bcrypt.compare(password, rows[0].password)
+
+        if (!isMatch) {
+            return res.status(400).json("Invalid credentials")
+        }
+
+        const userId = rows[0].id
+        const token  = JWT.sign({userId: userId}, SECRET_KEY, {expiresIn: '1h'})
+        connection.end()
+        return res.status(200).json({message: "Login successsful", token: token})
 
         
     } catch(error) {
