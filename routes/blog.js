@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const dbconnection = require('../db')
 const mysql = require('mysql2/promise')
 
 
@@ -31,6 +32,7 @@ router.get('/', auth, async (req, res) => {
 
 
 router.get('/:id', async (req, res) => {
+    
     const { id } = req.params
     try {
         const connection = await mysql.createConnection(dbConfig)
