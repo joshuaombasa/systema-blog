@@ -8,5 +8,5 @@ const dbConfig = {
     database: 'systemablog'
 }
 
-export const connection = await mysql.createConnection(dbConfig)
+
 
