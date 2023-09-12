@@ -13,7 +13,7 @@ const dbConfig = {
 
 const auth = require('../middleware/auth')
 
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig)
         const getAllBlogsSql = `SELECT blog.id, blog.title, blog.story, blog.created_at, CONCAT(author.first_name, ' ', author.last_name)
@@ -49,7 +49,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', auth ,async (req, res) => {
     const {title, story, author_id} = req.body
 
     try {
