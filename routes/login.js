@@ -15,14 +15,14 @@ const dbConfig = {
 const SECRET_KEY = '23DH2029E3E7D02'
 
 router.post('/',[
-    check("email", "Please enter a valid email").isEmail(),
-    check("password", "Please eneter a password longer than 6 caharacters").isLength({min: 7})
+    check("email","Please enter a valid email").isEmail(),
+    check("password","Please eneter a password longer than 6 caharacters").isLength({min: 7})
 ], async(req, res) => {
     const { email, password} = req.body
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
-        return res.status(400).json(errors.array())
+        return res.status(400).json({message : errors.array()[0].msg})
     }
 
     try {
@@ -32,13 +32,13 @@ router.post('/',[
 
         if (rows.length === 0) {
             connection.end()
-            return res.status(400).json("Invalid credentials")
+            return res.status(400).json({message: "Invalid credentials"})
         }
 
         const isMatch = await bcrypt.compare(password, rows[0].password)
 
         if (!isMatch) {
-            return res.status(400).json("Invalid credentials")
+            return res.status(400).json({message: "Invalid credentials"})
         }
 
         const userId = rows[0].id
@@ -48,7 +48,7 @@ router.post('/',[
 
         
     } catch(error) {
-        return res.status(400).json(error)
+        return res.status(400).json({message: error})
     }
 })
 
