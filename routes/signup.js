@@ -22,7 +22,7 @@ router.post('/', [
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
-        return res.status(400).json(errors.array())
+        return res.status(400).json({message : errors.array()[0].msg})
     }
 
     try {
@@ -35,7 +35,7 @@ router.post('/', [
         connection.end()
         return res.status(200).json(`${firstname} ${lastname} signup successful`)
     } catch(error) {
-        return res.status(400).json(error)
+        return res.status(400).json({message: error})
     }
 
     
