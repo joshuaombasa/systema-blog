@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const dbconnection = require('../db')
 const mysql = require('mysql2/promise')
 
 const dbConfig = {
@@ -31,7 +30,7 @@ router.get('/', async (req, res) => {
 
 
 router.get('/:id', async (req, res) => {
-    
+
     const { id } = req.params
     try {
         const connection = await mysql.createConnection(dbConfig)
@@ -41,6 +40,7 @@ router.get('/:id', async (req, res) => {
             connection.end()
             return res.status(200).json("Blog with the selected id does not exist")
         }
+        
         connection.end()
         return res.status(200).json(rows)
     } catch (error) {
@@ -48,21 +48,23 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.post('/', auth ,async (req, res) => {
-    const {title, story, author_id} = req.body
-
+router.post('/newBlog', auth, async (req, res) => {
+    const {title, description} = req.body
+    const authorId = req.userId
     try {
         const connection = await mysql.createConnection(dbConfig)
         const sql = `INSERT INTO blog (title, story,  author_id)
         VALUES (?, ?, ?)`
-        await connection.query(sql, [title, story, parseInt(author_id)])
+        await connection.query(sql, [title, description, parseInt(authorId)])
+        const blogSQL = `SELECT blog.id FROM blog WHERE blog.title=?`
+        const [rows] = await connection.query(blogSQL, [title])
+        console.log(rows)
         connection.end()
-        return res.status(200).json(`${title} saved`)
+        return res.status(200).json(rows[0])
     } catch(error) {
         return res.status(400).json(error)
     }
 
-    
 })
 
 module.exports = router
