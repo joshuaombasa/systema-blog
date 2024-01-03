@@ -16,7 +16,7 @@ const SECRET_KEY = '23DH2029E3E7D02'
 
 router.post('/',[
     check("email","Please enter a valid email").isEmail(),
-    check("password","Please eneter a password longer than 6 caharacters").isLength({min: 7})
+    check("password","Please eneter a password longer than 6 characters").isLength({min: 7})
 ], async(req, res) => {
     const { email, password} = req.body
     const errors = validationResult(req)
